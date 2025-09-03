@@ -1,0 +1,22 @@
+{
+  "devDependencies": {
+    "@types/module-alias": "^2.0.4",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "module-alias": "^2.2.3"
+  },
+  "name": "typescript-api",
+  "version": "1.0.0",
+  "description": "Typescript Node.js API",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "yarn build && node dist/src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://github.com/lucasgfoli/node-typescript-api",
+  "author": "Lucasgfoli <lucasgabrielfer.oli@gmail.com>",
+  "license": "ISC"
+}
