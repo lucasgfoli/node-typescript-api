@@ -24,7 +24,7 @@ export class SetupServer extends Server { // Extends herda todas as funcionalida
         this.addControllers([ forecastController ])
     }
 
-    public getApp(): Application { // 
+    public getApp(): Application { // Tipagem explícita
         return this.app
     }
 }
