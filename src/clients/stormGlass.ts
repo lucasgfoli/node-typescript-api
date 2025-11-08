@@ -1,3 +1,4 @@
+import { InternalError } from "@src/util/errors/internal-error";
 import { AxiosStatic } from "axios";
 
 export interface StormGlassPointSource {
@@ -32,6 +33,23 @@ export interface ForecastPoint {
     windSpeed: number;
 }
 
+export class ClientRequestError extends InternalError {
+    constructor(message: string) {
+
+        const internalMessage = 'Unexpected error when trying to communicate to StormGlass';
+        super(`${internalMessage}: ${message}`);
+    }
+}
+
+export class StormGlassResponseError extends InternalError {
+    constructor(message: string) {
+        const internalMessage =
+            'Unexpected error returned by the StormGlass service';
+
+        super(`${internalMessage}: ${message}`);
+    }
+}
+
 export class StormGlass {
     readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
     readonly stormGlassAPISource = 'noaa';
@@ -41,16 +59,38 @@ export class StormGlass {
     }
 
     public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
-        const response = await this.request.get<StormGlassForecastResponse>( // O get permite receber um tipo genérico como parâmetro
-            `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&lat=${lat}&lng=${lng}`,
-            {
-                headers: {
-                    Authorization: 'fake-token'
-                },
-            }
-        );
 
-        return this.normalizeResponse(response.data);
+        try {
+            const response = await this.request.get<StormGlassForecastResponse>( // O get permite receber um tipo genérico como parâmetro
+                `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&lat=${lat}&lng=${lng}`,
+                {
+                    headers: {
+                        Authorization: 'fake-token'
+                    },
+                }
+            );
+
+            return this.normalizeResponse(response.data);
+        }
+        catch (err: unknown) {
+
+            if (typeof err === 'object' && err !== null && 'response' in err && typeof (err as { response?: { status?: number } }).response?.status === 'number') {
+                const responseError = err as { response: { data: unknown; status: number } };
+                throw new StormGlassResponseError(`Error: ${JSON.stringify(responseError.response.data)} Code: ${responseError.response.status}`);
+            }
+
+            if (err instanceof Error) {
+                throw new ClientRequestError(err.message);
+            }
+
+            // fallback genérico
+            if (typeof err === 'object' && err !== null && 'message' in err) {
+                throw new ClientRequestError(String((err as { message: string }).message));
+            }
+
+            throw new ClientRequestError(String(err));
+        }
+
     }
 
     private normalizeResponse(points: StormGlassForecastResponse): ForecastPoint[] {
@@ -70,8 +110,8 @@ export class StormGlass {
 
     private isValidPoint(point: Partial<StormGlassPoint>): boolean // Make all properties in T optional
     {
-        return !! ( // Change to boolean
-            point.time && 
+        return !!( // Change to boolean
+            point.time &&
             point.swellDirection?.[this.stormGlassAPISource] && // Check if a required property and if there's data for the noaa
             point.swellHeight?.[this.stormGlassAPISource] && // ? Check if a propertie is null or undefined
             point.swellPeriod?.[this.stormGlassAPISource] &&
