@@ -1,4 +1,4 @@
-import { Axios, AxiosStatic } from "axios";
+import { AxiosStatic } from "axios";
 
 export interface StormGlassPointSource {
     // noaa: number; -> Outra possibilidade
@@ -65,10 +65,10 @@ export class StormGlass {
 
     private isValidPoint(point: Partial<StormGlassPoint>): boolean // Make all properties in T optional
     {
-        return !! (
-            point.time && // Estudar
-            point.swellDirection?.[this.stormGlassAPISource] &&
-            point.swellHeight?.[this.stormGlassAPISource] &&
+        return !! ( // Change to boolean
+            point.time && 
+            point.swellDirection?.[this.stormGlassAPISource] && // Check if a required property and if there's data for the noaa
+            point.swellHeight?.[this.stormGlassAPISource] && // ? Check if a propertie is null or undefined
             point.swellPeriod?.[this.stormGlassAPISource] &&
             point.waveDirection?.[this.stormGlassAPISource] &&
             point.waveHeight?.[this.stormGlassAPISource] &&
