@@ -1,5 +1,5 @@
 import { InternalError } from "@src/util/errors/internal-error";
-import { AxiosStatic } from "axios";
+import axios, { AxiosStatic } from "axios";
 import config, { IConfig } from 'config';
 
 export interface StormGlassPointSource {
@@ -59,7 +59,7 @@ export class StormGlass {
     readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
     readonly stormGlassAPISource = 'noaa';
 
-    constructor(protected request: AxiosStatic) {
+    constructor(protected request: AxiosStatic = axios) {
 
     }
 
