@@ -1,15 +1,18 @@
 import { StormGlass } from "@src/clients/stormGlass";
 import stormGlassNormalizedResponseFixture from "@test/fixtures/stormglass_normalized_response_3_hours.json";
-import { Forecast, Beach, BeachPosition } from "../forecast";
+import { Forecast, Beach, BeachPosition, ForecastProcessingInternalError } from "../forecast";
 
 jest.mock('@src/clients/stormGlass'); // Mockando service
 
 describe('Forecast Service', () => {
+
+    const mockedStormGlassService = new StormGlass() as jest.Mocked<StormGlass>; // Ao fazer as jest.Mocked<StormGlass> você assume que será uma versão mockada
+
     it('should return the forecast for a list', async () => {
 
-        StormGlass.prototype.fetchPoints = jest
-            .fn()
-            .mockResolvedValue(stormGlassNormalizedResponseFixture);
+        mockedStormGlassService.fetchPoints.mockResolvedValue(
+            stormGlassNormalizedResponseFixture
+        );
 
         const beaches: Beach[] = [
             {
@@ -19,7 +22,7 @@ describe('Forecast Service', () => {
                 position: BeachPosition.E,
                 user: 'some-id',
             },
-        ]
+        ];
         const expectedResponse = [
             {
                 time: '2020-04-26T00:00:00+00:00',
@@ -83,9 +86,35 @@ describe('Forecast Service', () => {
             },
         ];
 
-        const forecast = new Forecast(new StormGlass());
+        const forecast = new Forecast(mockedStormGlassService);
         const beachesWihRaiting = await forecast.processForecastForBeaches(beaches);
 
         expect(beachesWihRaiting).toEqual(expectedResponse);
+    });
+
+    it('should return as empty list when the beaches array is empty', async() => {
+        const forecast = new Forecast();
+        const response = await forecast.processForecastForBeaches([]);
+
+        expect(response).toEqual([]);
+    });
+
+    it('should throw internal processing error when something goes worng during the rating process', async() => {
+        
+        const beaches: Beach[] = [
+            {
+                lat: -33.792726,
+                lng: 151.289824,
+                name: 'Manly',
+                position: BeachPosition.E,
+                user: 'some-id',
+            },
+        ];
+
+        mockedStormGlassService.fetchPoints.mockRejectedValue('Error fetching data');
+
+        const forecast = new Forecast(mockedStormGlassService);
+
+        await expect(forecast.processForecastForBeaches(beaches)).rejects.toThrow(ForecastProcessingInternalError)
     });
 });
