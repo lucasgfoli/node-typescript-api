@@ -3,6 +3,7 @@ import './util/module-alias';
 import bodyParser from 'body-parser';
 import { ForecastController } from './controllers/forecast';
 import { Application } from 'express';
+import * as database from '@src/database'
 
 export class SetupServer extends Server {
   // Extends herda todas as funcionalidades da classe Server do @overnightjs/core, mas pode adicionar suas próprias coisas.
@@ -11,9 +12,10 @@ export class SetupServer extends Server {
     super(); // Inicializa construtor da classe Pai.
   }
 
-  public init(): void {
+  public async init(): Promise<void> {
     this.setupExpress(); // To comment
     this.setupControllers();
+    await this.databaseSetup();
   }
 
   private setupExpress(): void {
@@ -24,6 +26,14 @@ export class SetupServer extends Server {
   private setupControllers(): void {
     const forecastController = new ForecastController();
     this.addControllers([forecastController]);
+  }
+
+  private async databaseSetup(): Promise<void> {
+    await database.connect();
+  }
+
+  public async close(): Promise<void> {
+    await database.close();
   }
 
   public getApp(): Application {
