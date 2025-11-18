@@ -42,4 +42,10 @@ export class SetupServer extends Server {
     // Tipagem explícita
     return this.app;
   }
+
+  public start(): void {
+    this.app.listen(this.port, () => {
+      console.info('Server listening of port', this.port)
+    });
+  }
 }

@@ -41,6 +41,6 @@ const module_alias_1 = __importDefault(require("module-alias"));
 const files = path.resolve(__dirname, '../..');
 module_alias_1.default.addAliases({
     '@src': path.join(files, 'src'),
-    '@test': path.join(files, 'test')
+    '@test': path.join(files, 'test'),
 });
 //# sourceMappingURL=module-alias.js.map
