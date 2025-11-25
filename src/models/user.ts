@@ -1,17 +1,19 @@
 import mongoose, { Document, Model } from 'mongoose';
+import bcrypt from 'bcrypt';
+import AuthService from '@src/services/auth';
 
 export interface User {
-    _id?: string;
-    name: string;
-    email: string;
-    password: string;
+  _id?: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 export enum CUSTOM_VALIDATION {
   DUPLICATED = 'DUPLICATED',
-} 
+}
 
-interface UserModel extends Omit<User, '_id'>, Document {}
+interface UserModel extends Omit<User, '_id'>, Document { }
 
 const schema = new mongoose.Schema<UserModel>( // Ao inferir o tipo do schema, o mongoose não tenta inferir
   {
@@ -40,5 +42,19 @@ schema.path('email').validate(async (email: string) => {
 
   return !emailCount;
 }, 'already exists in the database.', CUSTOM_VALIDATION.DUPLICATED);
+
+schema.pre<UserModel>('save', async function (): Promise<void> {
+  if (!this.password || !this.isModified('password')) {
+    return;
+  }
+
+  try {
+    const hashedPassword = await AuthService.hashPassword(this.password);
+    this.password = hashedPassword;
+  } catch (error) {
+    console.error(error);
+  }
+
+});
 
 export const User: Model<UserModel> = mongoose.model('User', schema);
