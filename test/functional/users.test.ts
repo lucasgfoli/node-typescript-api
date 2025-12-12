@@ -24,7 +24,7 @@ describe('Users functional tests', () => {
 
             expect(response.body).toEqual(expect.objectContaining({
                 ...newUser,
-                ...{ password: expect.any(String) },
+                ...{ password: expect.any(String) }, 
             })
             );
         });
