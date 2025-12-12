@@ -1,4 +1,4 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
 export enum BeachPosition {
     S = 'S',
@@ -21,7 +21,7 @@ const schema = new mongoose.Schema<BeachModel>(
         lat: { type: Number, required: true },
         lng: { type: Number, required: true },
         name: { type: String, required: true },
-        user: { type: String, required: false },
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true},
         position: {
             type: String,
             enum: Object.values(BeachPosition),

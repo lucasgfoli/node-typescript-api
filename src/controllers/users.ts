@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { BaseController } from '.';
 import AuthService from '@src/services/auth';
 
+// Define que toda rota dentro dessa classe vai começar com /users.
 @Controller('users')
 export class UsersController extends BaseController {
     @Post('')

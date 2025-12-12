@@ -1,6 +1,5 @@
 import { User } from "@src/models/user";
 import AuthService from "@src/services/auth";
-import { glob } from "fs";
 
 describe('Users functional tests', () => {
     beforeEach(async () => {
