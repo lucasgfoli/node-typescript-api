@@ -14,20 +14,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BeachesController = void 0;
 const core_1 = require("@overnightjs/core");
+const auth_1 = require("@src/middlewares/auth");
 const beach_1 = require("@src/models/beach");
 const mongoose_1 = __importDefault(require("mongoose"));
 let BeachesController = class BeachesController {
     async create(req, res) {
+        var _a;
         try {
-            const beach = new beach_1.Beach(req.body);
+            const beach = new beach_1.Beach({ ...req.body, ...{ user: (_a = req.decoded) === null || _a === void 0 ? void 0 : _a.id } });
             const result = await beach.save();
             res.status(201).send(result);
         }
         catch (error) {
             if (error instanceof mongoose_1.default.Error.ValidationError) {
                 res.status(422).send({ error: error.message });
+                console.error(error);
             }
             else {
+                console.error(error);
                 res.status(500).send({ error: 'Internal Server Error' });
             }
         }
@@ -41,6 +45,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BeachesController.prototype, "create", null);
 exports.BeachesController = BeachesController = __decorate([
-    (0, core_1.Controller)('beaches')
+    (0, core_1.Controller)('beaches'),
+    (0, core_1.ClassMiddleware)(auth_1.authMiddleware)
 ], BeachesController);
 //# sourceMappingURL=beaches.js.map

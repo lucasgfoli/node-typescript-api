@@ -43,6 +43,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const forecast_1 = require("./controllers/forecast");
 const database = __importStar(require("@src/database"));
 const beaches_1 = require("./controllers/beaches");
+const users_1 = require("./controllers/users");
 class SetupServer extends core_1.Server {
     constructor(port = 3000) {
         super();
@@ -59,7 +60,8 @@ class SetupServer extends core_1.Server {
     setupControllers() {
         const forecastController = new forecast_1.ForecastController();
         const beachesController = new beaches_1.BeachesController();
-        this.addControllers([forecastController, beachesController]);
+        const usersController = new users_1.UsersController();
+        this.addControllers([forecastController, beachesController, usersController]);
     }
     async databaseSetup() {
         await database.connect();
