@@ -1,34 +1,28 @@
-name: Complete WorkFlow
+name: CI
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   pull_request:
-    branches:
-      - main
-      - master
-
+    branches: [main, master]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x, 16.x, 18.x]
-        mongo-version: [4.2, 4.4, 5.0, 6.0]
+        node-version: [18.x, 22.x]
+        mongo-version: [6.0]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: yarn
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.4.0
@@ -36,7 +30,7 @@ jobs:
           mongodb-version: ${{ matrix.mongo-version }}
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Run tests
         run: yarn test
