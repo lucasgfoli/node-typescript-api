@@ -78,7 +78,7 @@ describe('Users functional tests', () => {
                     password: newUser.password
                 });
 
-            console.log(response.body);
+            // console.log(response.body);
 
             expect(response.body).toEqual(
                 expect.objectContaining({ token: expect.any(String) })
