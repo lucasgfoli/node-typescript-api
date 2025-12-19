@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseController = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = require("@src/models/user");
+const logger_1 = __importDefault(require("@src/logger"));
 class BaseController {
     sendCreateUpdateErrorResponse(res, error) {
         if (error instanceof mongoose_1.default.Error.ValidationError) {
@@ -13,6 +14,7 @@ class BaseController {
             return res.status(clientErrors.code).send({ code: clientErrors.code, error: clientErrors.error });
         }
         else {
+            logger_1.default.error(error);
             return res.status(500).send({ code: 500, error: 'Something Went Wrong' });
         }
     }

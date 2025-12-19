@@ -65,7 +65,6 @@ describe('Users functional tests', () => {
                 email: newUser.email,
                 password: newUser.password
             });
-            console.log(response.body);
             expect(response.body).toEqual(expect.objectContaining({ token: expect.any(String) }));
         });
         it('should return UNAUTHORIZED if the user with the given email is not found', async () => {

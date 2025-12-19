@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.CUSTOM_VALIDATION = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const auth_1 = __importDefault(require("@src/services/auth"));
+const logger_1 = __importDefault(require("@src/logger"));
 var CUSTOM_VALIDATION;
 (function (CUSTOM_VALIDATION) {
     CUSTOM_VALIDATION["DUPLICATED"] = "DUPLICATED";
@@ -40,7 +41,12 @@ schema.pre('save', async function () {
         this.password = hashedPassword;
     }
     catch (error) {
-        console.error(error);
+        if (error instanceof Error) {
+            logger_1.default.error(error, `Error hashing the password for the user ${this.name}`);
+        }
+        else {
+            logger_1.default.error(error);
+        }
     }
 });
 exports.User = mongoose_1.default.model('User', schema);

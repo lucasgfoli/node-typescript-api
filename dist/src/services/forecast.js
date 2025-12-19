@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Forecast = exports.ForecastProcessingInternalError = void 0;
 const stormGlass_1 = require("@src/clients/stormGlass");
 const internal_error_1 = require("@src/util/errors/internal-error");
+const logger_1 = __importDefault(require("@src/logger"));
 class ForecastProcessingInternalError extends internal_error_1.InternalError {
     constructor(message) {
         super(`Unexepected error during the forecast processing: ${message}`);
@@ -15,6 +19,7 @@ class Forecast {
     }
     async processForecastForBeaches(beaches) {
         const pointsWithCorrectSources = [];
+        logger_1.default.info(`Preparing forecast for ${beaches.length} beaches`);
         try {
             for (const beache of beaches) {
                 const points = await this.stormGlass.fetchPoints(beache.lat, beache.lng);
@@ -24,6 +29,7 @@ class Forecast {
             return this.mapForecastByTime(pointsWithCorrectSources);
         }
         catch (error) {
+            logger_1.default.error(error);
             throw new ForecastProcessingInternalError(error.message);
         }
     }

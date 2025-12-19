@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BeachesController = void 0;
 const core_1 = require("@overnightjs/core");
+const logger_1 = __importDefault(require("@src/logger"));
 const auth_1 = require("@src/middlewares/auth");
 const beach_1 = require("@src/models/beach");
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -28,10 +29,10 @@ let BeachesController = class BeachesController {
         catch (error) {
             if (error instanceof mongoose_1.default.Error.ValidationError) {
                 res.status(422).send({ error: error.message });
-                console.error(error);
+                logger_1.default.error(error);
             }
             else {
-                console.error(error);
+                logger_1.default.error(error);
                 res.status(500).send({ error: 'Internal Server Error' });
             }
         }
