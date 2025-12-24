@@ -1,3 +1,4 @@
+import './util/module-alias';
 import logger from "./logger";
 import { SetupServer } from "./server";
 import config from 'config'

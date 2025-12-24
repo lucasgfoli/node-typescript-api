@@ -8,18 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForecastController = void 0;
 const core_1 = require("@overnightjs/core");
-const logger_1 = __importDefault(require("@src/logger"));
 const auth_1 = require("@src/middlewares/auth");
 const beach_1 = require("@src/models/beach");
 const forecast_1 = require("@src/services/forecast");
+const _1 = require(".");
 const forecast = new forecast_1.Forecast();
-let ForecastController = class ForecastController {
+let ForecastController = class ForecastController extends _1.BaseController {
     async getForecastForLoggedUser(req, res) {
         var _a;
         try {
@@ -28,14 +25,7 @@ let ForecastController = class ForecastController {
             res.status(200).send(forecastData);
         }
         catch (error) {
-            if (error instanceof Error) {
-                logger_1.default.error(error);
-                res.status(500).send({ error: error.message });
-            }
-            else {
-                logger_1.default.error(error);
-                res.status(500).send({ error: 'Something went wrong' });
-            }
+            this.sendErrorResponse(res, { code: 500, message: 'Something went wrong' });
         }
     }
 };

@@ -1,6 +1,7 @@
 import { Beach } from "@src/models/beach";
 import { User } from "@src/models/user";
 import AuthService from "@src/services/auth";
+import { error } from "console";
 
 describe('Beaches functional tests', () => {
     const defaultUser = {
@@ -43,8 +44,9 @@ describe('Beaches functional tests', () => {
 
             expect(response.status).toBe(422);
             expect(response.body).toEqual({
-                error:
-                    'Beach validation failed: lat: Cast to Number failed for value "invalid_string" (type string) at path "lat"',
+                code: 422,
+                error: 'Unprocessable Entity',
+                message: 'Beach validation failed: lat: Cast to Number failed for value "invalid_string" (type string) at path "lat"',
             });
         });
 

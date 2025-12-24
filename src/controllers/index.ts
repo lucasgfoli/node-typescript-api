@@ -2,17 +2,18 @@ import mongoose from "mongoose";
 import { Response } from 'express';
 import { CUSTOM_VALIDATION } from "@src/models/user";
 import logger from "@src/logger";
+import ApiError, { APIError } from "@src/util/errors/api-error";
 
 export abstract class BaseController {
     protected sendCreateUpdateErrorResponse(res: Response, error: mongoose.Error.ValidationError | Error): Response {
         
         if (error instanceof mongoose.Error.ValidationError) {
             const clientErrors = this.handleClientErrors(error);
-            return res.status(clientErrors.code).send({ code: clientErrors.code, error: clientErrors.error });
+            return res.status(clientErrors.code).send(ApiError.format({ code: clientErrors.code, message: clientErrors.error }));
         }
         else {
             logger.error(error);
-            return res.status(500).send({ code: 500, error: 'Something Went Wrong' });
+            return res.status(500).send(ApiError.format({ code: 500, message: 'Something Went Wrong' }));
         }
 
     }
@@ -24,5 +25,9 @@ export abstract class BaseController {
             return { code: 409, error: error.message };
         } else
             return { code: 422, error: error.message };
+    }
+
+    protected sendErrorResponse(res: Response, apiError: APIError): Response {
+        return res.status(apiError.code).send(ApiError.format(apiError));
     }
 }

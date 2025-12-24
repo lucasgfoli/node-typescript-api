@@ -1,12 +1,14 @@
 import { Server } from '@overnightjs/core';
-import './util/module-alias';
-import bodyParser from 'body-parser';
-import { ForecastController } from './controllers/forecast';
 import { Application } from 'express';
-import * as database from '@src/database'
+import { ForecastController } from './controllers/forecast';
 import { BeachesController } from './controllers/beaches';
 import { UsersController } from './controllers/users';
+import * as database from '@src/database'
+import './util/module-alias';
+import bodyParser from 'body-parser';
 import logger from './logger';
+import expressPino from 'express-pino-logger';
+import cors from 'cors';
 
 export class SetupServer extends Server {
   // Extends herda todas as funcionalidades da classe Server do @overnightjs/core, mas pode adicionar suas próprias coisas.
@@ -24,6 +26,10 @@ export class SetupServer extends Server {
   private setupExpress(): void {
     // Método que só poderá ser utilizado dentro da classe.
     this.app.use(bodyParser.json());
+    this.app.use(expressPino(logger));
+    this.app.use(cors({
+      origin: '*',
+    }));
   }
 
   private setupControllers(): void {

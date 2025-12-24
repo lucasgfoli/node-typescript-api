@@ -53,7 +53,7 @@ describe('AuthMiddleware', () => {
         expect(resFake.status).toHaveBeenCalledWith(401);
         expect(sendMock).toHaveBeenCalledWith({
             code: 401,
-            error: 'jwt must be provided',
+            error: 'Token não informado',
         });
     });
 });

@@ -7,15 +7,16 @@ exports.BaseController = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = require("@src/models/user");
 const logger_1 = __importDefault(require("@src/logger"));
+const api_error_1 = __importDefault(require("@src/util/errors/api-error"));
 class BaseController {
     sendCreateUpdateErrorResponse(res, error) {
         if (error instanceof mongoose_1.default.Error.ValidationError) {
             const clientErrors = this.handleClientErrors(error);
-            return res.status(clientErrors.code).send({ code: clientErrors.code, error: clientErrors.error });
+            return res.status(clientErrors.code).send(api_error_1.default.format({ code: clientErrors.code, message: clientErrors.error }));
         }
         else {
             logger_1.default.error(error);
-            return res.status(500).send({ code: 500, error: 'Something Went Wrong' });
+            return res.status(500).send(api_error_1.default.format({ code: 500, message: 'Something Went Wrong' }));
         }
     }
     handleClientErrors(error) {
@@ -25,6 +26,9 @@ class BaseController {
         }
         else
             return { code: 422, error: error.message };
+    }
+    sendErrorResponse(res, apiError) {
+        return res.status(apiError.code).send(api_error_1.default.format(apiError));
     }
 }
 exports.BaseController = BaseController;
